@@ -1,8 +1,8 @@
 # Portfolio
 
-Portfolio template: single-file static site served with Express.
+Portfolio template: static site served with Express, organized by separation of concerns.
 
-Single `public/index.html` with a `CONFIG` object for content, plus a minimal Express static server in `server.js`.
+The site is split by responsibility — **structure** (HTML), **presentation** (CSS), **content** (config.js), and **behavior** (main.js). A minimal Express static server in `server.js` serves `public/`.
 
 ## Features
 
@@ -16,12 +16,21 @@ Single `public/index.html` with a `CONFIG` object for content, plus a minimal Ex
 
 ```
 .
-├── server.js       # Express static server (serves public/)
+├── server.js            # Express static server (serves public/)
 ├── public/
-│   └── index.html  # Entire site + CONFIG object + styles + script
+│   ├── index.html       # Structure / markup only
+│   ├── css/
+│   │   └── style.css    # Presentation / styling
+│   └── js/
+│       ├── config.js    # Content / data — edit this to make it yours
+│       └── main.js      # Behavior / interactions
 ├── package.json
 └── package-lock.json
 ```
+
+> Note: a one-line theme-init script stays inline in `index.html`'s `<head>`.
+> It must run before first paint to avoid a theme flash; loading it as an
+> external file would delay it.
 
 ## Quick start
 
@@ -44,7 +53,7 @@ No build step — edit and refresh.
 
 ## Customize
 
-Edit the `CONFIG` object at the top of the `<script>` in `public/index.html`:
+Edit the `CONFIG` object in `public/js/config.js`:
 
 - `name`, `initials`, `roles`, `email`, `location`, `cvUrl`
 - `socials` — `{ label, url, icon }`, icons: `github`, `linkedin`, `x`, `mail`
@@ -68,7 +77,7 @@ const CONFIG = {
 
 ## Notes
 
-- Contact form only validates and shows a toast — wire `contactForm` submit handler to an API / email service to actually send messages.
+- Contact form only validates and shows a toast — wire `contactForm` submit handler (in `public/js/main.js`) to an API / email service to actually send messages.
 - Theme preference is stored as `pf-theme` in `localStorage`.
 
 ## License
