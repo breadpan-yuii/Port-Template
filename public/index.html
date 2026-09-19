@@ -44,6 +44,8 @@
     }
     .wrap { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
     section { padding: 5rem 0 1rem; scroll-margin-top: 4.5rem; }
+    #top > section { transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); }
+    #top > section.away { opacity: 0; transform: translateY(24px); pointer-events: none; }
     h2.sec {
       font-size: 0.8rem; font-weight: 700; letter-spacing: 0.14em;
       text-transform: uppercase; color: var(--accent); margin: 0 0 0.6rem;
@@ -57,8 +59,10 @@
       backdrop-filter: blur(12px);
       background: color-mix(in srgb, var(--bg) 82%, transparent);
       border-bottom: 1px solid var(--line);
-      transition: background-color 0.25s var(--ease), border-color 0.25s var(--ease);
+      transform: translateY(0);
+      transition: transform 0.32s var(--ease), background-color 0.25s var(--ease), border-color 0.25s var(--ease);
     }
+    nav.hidden { transform: translateY(-100%); }
     .nav-inner { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; height: 4rem; display: flex; align-items: center; gap: 1.25rem; }
     .logo { font-weight: 800; letter-spacing: -0.02em; text-decoration: none; color: var(--ink); font-size: 1.05rem; }
     .logo span { color: var(--accent); }
@@ -268,7 +272,7 @@
     </section>
     <div class="scroll-hint">scroll ↓</div>
 
-    <section id="about">
+    <section id="about" class="away">
       <h2 class="sec reveal">About</h2>
       <h3 class="title reveal">A little about me</h3>
       <div class="about-grid">
@@ -281,14 +285,14 @@
       </div>
     </section>
 
-    <section id="skills">
+    <section id="skills" class="away">
       <h2 class="sec reveal">Skills</h2>
       <h3 class="title reveal">What I work with</h3>
       <p class="lead reveal">Tools and technologies I use to ship things.</p>
       <div class="skill-groups" id="skillGroups"></div>
     </section>
 
-    <section id="projects">
+    <section id="projects" class="away">
       <h2 class="sec reveal">Projects</h2>
       <h3 class="title reveal">Selected work</h3>
       <p class="lead reveal">Filter by tag. Click a card's links for live demos and source.</p>
@@ -296,14 +300,14 @@
       <div class="proj-grid" id="projGrid"></div>
     </section>
 
-    <section id="experience">
+    <section id="experience" class="away">
       <h2 class="sec reveal">Experience</h2>
       <h3 class="title reveal">Where I've been</h3>
       <p class="lead reveal">Roles and milestones so far.</p>
       <ul class="timeline" id="timeline"></ul>
     </section>
 
-    <section id="contact">
+    <section id="contact" class="away">
       <h2 class="sec reveal">Contact</h2>
       <h3 class="title reveal">Let's talk</h3>
       <div class="contact-grid">
@@ -365,10 +369,12 @@
         { group: 'Tools', items: [{ n: 'Git', l: 88 }, { n: 'Figma', l: 70 }, { n: 'Linux', l: 72 }] },
       ],
       projects: [
-        { title: 'TryCRUD', desc: 'Minimal CRUD app with search, tags, undo, and dark mode.', tags: ['JavaScript', 'Express'], live: '#', code: '#', gradient: 'linear-gradient(135deg,#4f46e5,#22d3ee)' },
-        { title: 'Taskboard', desc: 'Kanban board with drag-and-drop and local persistence.', tags: ['JavaScript', 'CSS'], live: '#', code: '#', gradient: 'linear-gradient(135deg,#f59e0b,#ef4444)' },
-        { title: 'Weather Now', desc: 'Clean weather dashboard consuming a public API.', tags: ['API', 'JavaScript'], live: '#', code: '#', gradient: 'linear-gradient(135deg,#10b981,#3b82f6)' },
-        { title: 'Dotfiles', desc: 'My Linux setup: Hyprland, shell, and editor configs.', tags: ['Linux', 'Tools'], live: '#', code: '#', gradient: 'linear-gradient(135deg,#8b5cf6,#ec4899)' },
+        { title: 'Project One', desc: 'Short description of this project goes here. Replace me in CONFIG.projects.', tags: ['Placeholder'], live: '#', code: '#', gradient: 'linear-gradient(135deg,#4f46e5,#22d3ee)' },
+        { title: 'Project Two', desc: 'Short description of this project goes here. Replace me in CONFIG.projects.', tags: ['Placeholder'], live: '#', code: '#', gradient: 'linear-gradient(135deg,#f59e0b,#ef4444)' },
+        { title: 'Project Three', desc: 'Short description of this project goes here. Replace me in CONFIG.projects.', tags: ['Placeholder'], live: '#', code: '#', gradient: 'linear-gradient(135deg,#10b981,#3b82f6)' },
+        { title: 'Project Four', desc: 'Short description of this project goes here. Replace me in CONFIG.projects.', tags: ['Placeholder'], live: '#', code: '#', gradient: 'linear-gradient(135deg,#8b5cf6,#ec4899)' },
+        { title: 'Project Five', desc: 'Short description of this project goes here. Replace me in CONFIG.projects.', tags: ['Placeholder'], live: '#', code: '#', gradient: 'linear-gradient(135deg,#eab308,#f97316)' },
+        { title: 'Project Six', desc: 'Short description of this project goes here. Replace me in CONFIG.projects.', tags: ['Placeholder'], live: '#', code: '#', gradient: 'linear-gradient(135deg,#ec4899,#8b5cf6)' },
       ],
       experience: [
         { period: '2024 — Now', role: 'Frontend Developer', org: 'Freelance', text: 'Shipping landing pages and web apps for small clients, end to end.' },
@@ -529,8 +535,22 @@
     }, { rootMargin: '-40% 0px -55% 0px' });
     secIds.forEach(id => secIo.observe(document.getElementById(id)));
     const toTop = $('#toTop');
-    addEventListener('scroll', () => toTop.classList.toggle('show', scrollY > 600), { passive: true });
+    const navEl = document.querySelector('nav');
+    let lastScrollY = 0;
+    addEventListener('scroll', () => {
+      const y = scrollY;
+      toTop.classList.toggle('show', y > 600);
+      if (y > 100 && y > lastScrollY) navEl.classList.add('hidden');
+      else if (y < lastScrollY || y <= 100) navEl.classList.remove('hidden');
+      lastScrollY = y;
+    }, { passive: true });
     toTop.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
+
+    // sections show while on screen, hide when scrolled off
+    const secObs = new IntersectionObserver((entries) => {
+      for (const en of entries) en.target.classList.toggle('away', !en.isIntersecting);
+    }, { rootMargin: '-40px 0px -40px 0px' });
+    document.querySelectorAll('#top > section').forEach(s => secObs.observe(s));
 
     // contact form (demo: validates + toast; wire to a backend later)
     function toast(msg) {
